@@ -5,6 +5,8 @@ import './assets/tailwind.css';  // Import Tailwind CSS here
 // Import only the functions you need from Firebase
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from "firebase/firestore";
+import { getAnalytics } from "firebase/analytics";
+
 
 
 const firebaseConfig = {
@@ -17,6 +19,8 @@ const firebaseConfig = {
   measurementId: "G-NBYHPTG002"
 };
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
 
 
 
@@ -24,3 +28,5 @@ createApp(App).mount('#app');
 const db = getFirestore(app);
 
 export { db };
+
+export { analytics };

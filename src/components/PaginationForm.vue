@@ -16,7 +16,7 @@
 
           <!-- Add logic for displaying the current page number dynamically -->
           <span
-            class="relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">{{
+            class="relative z-10 inline-flex items-center bg-indigo-200 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-200">{{
             currentPage }}</span>
 
           <!-- You can add more page numbers or navigation logic here -->

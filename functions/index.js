@@ -12,7 +12,7 @@ exports.createStripeCustomer = functions.auth.user().onCreate(async (user) => {
     const customer = await stripe.customers.create({
         email: user.email,
     });
-    console.log('creating stripe customer')
+    console.log('creating stripe customer upon sign up and creating firebase doc', customer)
     // Save Stripe customer ID to Firestore
     return admin.firestore().collection('stripeCustomers').doc(user.uid).set({
         stripeCustomerId: customer.id,
@@ -22,9 +22,9 @@ exports.createStripeCustomer = functions.auth.user().onCreate(async (user) => {
 
 
 exports.stripeWebhook = functions.runWith({
-    minInstances: 0, 
+    minInstances: 1, 
   }).https.onRequest(async (req, res) => {
-
+    console.log('stripe webhook');
     const sig = req.headers['stripe-signature'];
     let event;
     try {

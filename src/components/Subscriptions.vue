@@ -31,7 +31,7 @@ export default {
       try {
         // Create a Checkout session in Firestore
         const checkoutSessionRef = await customerRef.collection('checkout_sessions').add({
-          price: 'price_12345', // The price ID from Stripe
+          price: 'price_1QCeuIJqQ5pyGwZ7zpUb9ANr', // The price ID from Stripe
           success_url: window.location.origin + '/success', // Redirect after success
           cancel_url: window.location.origin + '/cancel',   // Redirect after cancel
         });

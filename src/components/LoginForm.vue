@@ -1,7 +1,7 @@
 <template>
   <div class="login-container flex flex-col items-center mt-0">
-    <button v-if="!user" @click="loginWithGoogle" class="bg-indigo-600 text-white rounded hover:bg-indigo-500 p-2">
-      Login with Google
+    <button v-if="!user" @click="loginWithGoogle" class="z-[1] bg-main text-white rounded-full hover:bg-main-dark  p-2">
+      Sign In
     </button>
   </div>
 </template>

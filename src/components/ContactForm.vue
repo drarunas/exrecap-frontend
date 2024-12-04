@@ -34,7 +34,7 @@
 
       <button 
         type="submit" 
-        class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow hover:bg-indigo-700 focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300"
+        class="w-full bg-main text-white py-2 px-4 rounded-md shadow hover:bg-main-dark focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300"
       >
         Submit
       </button>

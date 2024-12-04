@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full">
+  <div class="min-h-screen bg-gray-50">
     <Disclosure as="nav" class="bg-gray-800" v-slot="{ open }">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 items-center justify-between">
@@ -8,7 +8,7 @@
               <img class="h-8 w-8" :src="require('@/assets/logo.png')" alt="" />
             </div>
             <div class="hidden md:block">
-              <div v-if='user' class="ml-10 flex items-baseline space-x-4">
+              <div v-if="user" class="ml-10 flex items-baseline space-x-4">
                 <a v-for="item in navigation" :key="item.name" href=""
                   :class="[item.name === currentTab ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white', 'rounded-md px-3 py-2 text-sm font-medium']"
                   :aria-current="item.name === currentTab ? 'page' : undefined"
@@ -17,9 +17,7 @@
               </div>
             </div>
           </div>
-          <LoginForm v-if="!user" />
-
-
+          
 
           <div v-if="user" class="hidden md:block">
             <div class="ml-4 flex items-center md:ml-6">
@@ -58,6 +56,7 @@
               </Menu>
             </div>
           </div>
+          
           <div class="-mr-2 flex md:hidden">
             <!-- Mobile menu button -->
             <DisclosureButton v-if="user"
@@ -68,6 +67,7 @@
               <XMarkIcon v-else class="block h-6 w-6" aria-hidden="true" />
             </DisclosureButton>
           </div>
+          <LoginForm v-if="!user" />
         </div>
       </div>
 
@@ -118,76 +118,74 @@
 
 
 
-    <main>
+    <main class="flex flex-col items-center justify-center">
 
-      <div v-if="user" class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div class="px-4 sm:px-6 lg:px-8 w-full">
         <!-- Display content based on the current tab -->
-        <div v-if="currentTab === 'Experts'">
-          <ExpertsQueryForm :isSubscribed="isSubscribed" v-if="user" />
+        <div v-show="user && currentTab === 'Experts'" class="flex flex-col items-center justify-center" >
+          <ExpertsQueryForm :isSubscribed="isSubscribed" v-model:q="user_query" />
         </div>
 
-        <!-- <div v-if="currentTab === 'Topics'">
-          <TopicsQueryForm v-if="user" />
+        
+
+        <div v-show="currentTab === 'Research'" class="flex flex-col items-center justify-center" >
+          <ResearchQueryForm v-if="user" :isSubscribed="isSubscribed" v-model:q="user_query" />
         </div>
 
-        <div v-if="currentTab === 'Research'">
-          <ResearchQueryForm v-if="user" />
-        </div> -->
-        <div v-if="currentTab === 'Conflicts of Interest'">
-          <!-- Your content for Conflicts of Interest tab -->
-          <p>Premium feature</p>
+        <div v-show="currentTab === 'Pre Review'" class="flex flex-col items-center justify-center" >
+          <PreReview v-if="user" :isSubscribed="isSubscribed" />
         </div>
 
-        <div v-if="currentTab === 'Contact'">
-          <ContactForm v-if="user" />
+        
+
+
+        <div v-if="!user" class="flex flex-col items-center justify-center">
+            <CoverPage :user="user" />
         </div>
       </div>
-
-      <div v-if="!user" class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-
-        <CoverPage v-if="!user" />
-
-      </div>
-
-
-
-
-
 
 
     </main>
   </div>
-
+  <FooterComponent />
 </template>
 
 <script>
 /* eslint-disable no-unused-vars */
 import LoginForm from './components/LoginForm.vue';
 import ExpertsQueryForm from './components/ExpertsQueryForm.vue';
+import FooterComponent from './components/Footer.vue'
+
 import TopicsQueryForm from './components/TopicsQueryForm.vue';
 import ResearchQueryForm from './components/ResearchQueryForm.vue';
+import PreReview from './components/PreReview.vue';
 import CoverPage from './components/CoverPage.vue';
 import ContactForm from './components/ContactForm.vue';
 import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, query } from 'firebase/firestore';
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { loadStripe } from '@stripe/stripe-js';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 
 
+
+
 export default {
   components: {
     LoginForm,
     ExpertsQueryForm,
-    ContactForm
+    PreReview,
+    FooterComponent,
+
   },
   data() {
     return {
       user: null,
-      currentTab: 'Experts',
+      currentTab: '',
       isSubscribed: false,
       stripe: null,
+      user_query: 'Is climate change related to mental health?',
     };
   },
   async mounted() {
@@ -196,22 +194,30 @@ export default {
     const auth = getAuth();
     onAuthStateChanged(auth, async (user) => {
       this.user = user;
+      this.currentTab = 'Experts'
+      console.log('mounted', user);
 
       if (this.user) {
         // Check the subscription status when a user is logged in
         await this.checkUserSubscription(this.user);
+
       } else {
         // If the user is not logged in, reset subscription status
         this.isSubscribed = false;
       }
+      window.scrollTo({
+        top: 70,
+        behavior: 'smooth' // Optional for smooth scrolling
+      });
     });
   },
   created() {
     const auth = getAuth();
     onAuthStateChanged(auth, (user) => {
       this.user = user;
-      this.checkUserSubscription(this.user);
+      console.log('created', user);
     });
+
 
 
   },
@@ -229,7 +235,7 @@ export default {
 
 
       const session = await createSession({
-        priceId: 'price_1Q6GQKJqQ5pyGwZ7cjRQoDhH', // Define your Stripe price ID
+        priceId: 'price_1QCeuIJqQ5pyGwZ7zpUb9ANr', // 5 USD individual monthly
       });
 
       const result = await this.stripe.redirectToCheckout({
@@ -257,7 +263,6 @@ export default {
           // Get the subscription status from Firestore
           const userData = userDoc.data();
           const subscriptionStatus = userData.subscriptionStatus;
-          console.log(subscriptionStatus);
 
           // Update isSubscribed based on subscription status
           if (subscriptionStatus === 'active') {
@@ -291,9 +296,10 @@ export default {
 
 
 const navigation = [
-  { name: 'Experts', href: '', current: true },
+  { name: 'Experts', href: '', current: false },
   // { name: 'Conflicts of Interest', href: '', current: false },
-  { name: 'Contact', href: '', current: false }
+  { name: 'Research', href: '', current: false },
+  { name: 'Pre Review', href: '', current: false },
 ]
 
 

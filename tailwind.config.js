@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+const colors = require('tailwindcss/colors')
 module.exports = {
   content: [
     "./index.html",
@@ -6,7 +7,15 @@ module.exports = {
     "./*.vue"
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'main': colors.indigo[500],
+        'main-dark': colors.indigo[600],
+        'secondary': '#9C739B',
+        'secondary-light': '#BAA6BA'
+      }
+    }
   },
-  plugins: [],
+    plugins: [],
+
 }
